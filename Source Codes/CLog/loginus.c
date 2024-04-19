@@ -39,13 +39,11 @@ user:
         const unsigned char *saved_pass = sqlite3_column_text(stmt, 1);
 
         printf("Enter your Password: ");
-        fgets(pass, sizeof(pass), stdin);
-        pass[strcspn(pass, "\n")] = 0; // Remove trailing newline if present
+        scanf("%s", pass);
 
         int compare_user = strcmp(user_name, (const char *)saved_user);
         if (compare_user == 0) {
-            int compare_pass = strcmp(pass, (const char *)saved_pass);
-            if (compare_pass == 0) {
+            if (saved_pass != NULL && strcmp(pass, (const char *)saved_pass) == 0) {
                 printf("\n\n******LOGIN SUCCESSFUL******\n\n\n");
             } else {
                 printf("\n\n******INCORRECT PASSWORD******\nPlease Try again...\n\n");
