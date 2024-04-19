@@ -16,7 +16,12 @@ int main() {
 
 user:
     printf("Enter Username: \n");
-    scanf("%s", user_name);
+    fgets(user_name, sizeof(user_name), stdin);
+    user_name[strcspn(user_name, "\n")] = '\0'; // Remove newline character if present
+
+    // Clear input buffer
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 
     // Prepare the SQL statement to select the username and password for the given username
     sqlite3_stmt *stmt;
@@ -39,7 +44,8 @@ user:
         const unsigned char *saved_pass = sqlite3_column_text(stmt, 1);
 
         printf("Enter your Password: ");
-        scanf("%s", pass);
+        fgets(pass, sizeof(pass), stdin);
+        pass[strcspn(pass, "\n")] = '\0'; // Remove newline character if present
 
         int compare_user = strcmp(user_name, (const char *)saved_user);
         if (compare_user == 0) {
