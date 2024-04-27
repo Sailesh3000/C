@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sqlite3.h"
-#include <conio.h> // for _getch
 
 #define MAX_LENGTH 100
 
@@ -20,7 +19,8 @@ int main() {
 
 user:
     printf("Enter Username: ");
-    scanf("%s", user_name);
+    fgets(user_name, sizeof(user_name), stdin);
+    user_name[strcspn(user_name, "\n")] = '\0'; // Remove the trailing newline character
 
     // Prepare the SQL statement to select the username and password for the given username
     sqlite3_stmt *stmt;
@@ -43,13 +43,8 @@ user:
         const unsigned char *saved_pass = sqlite3_column_text(stmt, 1);
 
         printf("Enter your Password: ");
-        int i = 0;
-        char ch;
-        while ((ch = _getch()) != '\r' && i < MAX_LENGTH - 1) {
-            pass[i++] = ch;
-            printf("*");
-        }
-        pass[i] = '\0'; // Null-terminate the password string
+        fgets(pass, sizeof(pass), stdin);
+        pass[strcspn(pass, "\n")] = '\0'; // Remove the trailing newline character
 
         if (strcmp(user_name, (const char *)saved_user) == 0 && strcmp(pass, (const char *)saved_pass) == 0) {
             printf("\n\n******LOGIN SUCCESSFUL******\n\n\n");
@@ -60,18 +55,13 @@ user:
     } else {
         printf("User not found\n");
         printf("Do you want to sign up? (Y/N): ");
-        char answer;
-        scanf(" %c", &answer);
-        if (answer == 'Y' || answer == 'y') {
+        char answer[MAX_LENGTH];
+        fgets(answer, sizeof(answer), stdin);
+        if (answer[0] == 'Y' || answer[0] == 'y') {
             // Sign-up process
             printf("Enter your Password: ");
-            int i = 0;
-            char ch;
-            while ((ch = _getch()) != '\r' && i < MAX_LENGTH - 1) {
-                pass[i++] = ch;
-                printf("*");
-            }
-            pass[i] = '\0'; // Null-terminate the password string
+            fgets(pass, sizeof(pass), stdin);
+            pass[strcspn(pass, "\n")] = '\0'; // Remove the trailing newline character
             sprintf(sql, "INSERT INTO users (username, password) VALUES ('%s', '%s')", user_name, pass);
             rc = sqlite3_exec(db, sql, 0, 0, 0);
             if (rc != SQLITE_OK) {
